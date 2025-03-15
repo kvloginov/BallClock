@@ -194,12 +194,27 @@ static void drawBack() {
     }
 }
 
+
+bool isNightModeByTime = false;
+
+LP_TIMER_("check_night_time", 1000, []() {
+    Looper.thisTimer()->restart(1000);
+    if (!db[kk::night_mode_by_time] || !NTP.synced()) {
+        isNightModeByTime = false;
+    };
+    
+    isNightModeByTime = false;
+    if (db[kk::night_mode_by_time_start].toInt32() < NTP.daySeconds() && NTP.daySeconds() < db[kk::night_mode_by_time_end].toInt32()) {
+        isNightModeByTime = true;
+    }
+});
+
 LP_TIMER_("redraw", 50, []() {
     Looper.thisTimer()->restart(50);
     
     applyBright();
 
-    if (db[kk::night_mode] && photo.getFilt() < db[kk::night_trsh].toInt()) {
+    if (isNightModeByTime || (db[kk::night_mode] && photo.getFilt() < db[kk::night_trsh].toInt())) {
         matrix.clear();
         matrix.setColor24(db[kk::night_color]);
         drawClock();

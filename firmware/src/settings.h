@@ -23,13 +23,16 @@ DB_KEYS(
     adc_max,
 
     night_mode,
+    night_mode_by_time,
+    night_mode_by_time_start,
+    night_mode_by_time_end,
     night_color,
     night_trsh,
 
     clock_style,
     clock_color,
 
-    back_mode,  // 0 none, 1 grad, 2 perlin
+    back_mode, // 0 none, 1 grad, 2 perlin
     back_pal,
     back_speed,
     back_angle,

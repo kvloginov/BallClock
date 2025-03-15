@@ -74,10 +74,16 @@ static void build(sets::Builder& b) {
         sets::Group g(b, "Ночной режим");
 
         if (b.Switch(kk::night_mode, "Включен")) b.reload();
+        if (b.Switch(kk::night_mode_by_time, "Включать по расписанию")) b.reload();
 
-        if (db[kk::night_mode]) {
+        if (db[kk::night_mode] || db[kk::night_mode_by_time]) {
             b.Color(kk::night_color, "Цвет");
             b.Slider(kk::night_trsh, "Порог", 0, 1023);
+
+            if (db[kk::night_mode_by_time]) {
+                b.Time(kk::night_mode_by_time_start, "Включать в");
+                b.Time(kk::night_mode_by_time_end, "Отключать в");
+            }
         }
     }
     {
@@ -148,6 +154,9 @@ LP_TICKER([]() {
         db.init(kk::adc_max, 1023);
 
         db.init(kk::night_mode, false);
+        db.init(kk::night_mode_by_time, false);
+        db.init(kk::night_mode_by_time_start, 7200); // 02:00
+        db.init(kk::night_mode_by_time_end, 36000); // 10:00
         db.init(kk::night_color, 0xff0000);
         db.init(kk::night_trsh, 50);
 
