@@ -1,16 +1,20 @@
 #include <GyverGFX.h>
 
-// BallClock Generator
 #define MX_LED_AMOUNT 128
-#define MX_XY_W 39
-#define MX_XY_H 13
+#define MX_XY_VIRT_W 39
+#define MX_XY_VIRT_H 13
+#define MX_REAL_H (MX_XY_VIRT_H / 2) + 1
 #define MX_DIAG_W 20
 #define MX_DIAG_H 7
+// not mapped pixel
+#define NM UINT8_MAX
 
 // BallMatrix
-class BallMatrix : public GyverGFX {
-   public:
-    BallMatrix() {
+class BallMatrix : public GyverGFX
+{
+public:
+    BallMatrix()
+    {
         setModeXY();
     }
 
@@ -23,8 +27,10 @@ class BallMatrix : public GyverGFX {
     void clear();
 
     // gfx
-    void fastSet(int x, int y) {
-        if (_buf16 != getColor()) {
+    void fastSet(int x, int y)
+    {
+        if (_buf16 != getColor())
+        {
             _buf16 = getColor();
             _buf32 = getColor24full();
         }
@@ -35,28 +41,35 @@ class BallMatrix : public GyverGFX {
     int ledXY(int x, int y);
     int ledDiag(int x, int y);
 
-    void setLED(int x, int y, uint32_t color) {
+    void setLED(int x, int y, uint32_t color)
+    {
         int led = _diag_mode ? ledDiag(x, y) : ledXY(x, y);
-        if (led >= 0) setLED(led, color);
+        if (led != NM)
+            setLED(led, color);
     }
-    uint32_t getLED(int x, int y) {
+    uint32_t getLED(int x, int y)
+    {
         int led = _diag_mode ? ledDiag(x, y) : ledXY(x, y);
-        return (led >= 0) ? getLED(led) : 0;
+        return (led != NM) ? getLED(led) : 0;
     }
 
-    void setModeXY() {
+    void setModeXY()
+    {
         _diag_mode = false;
-        size(MX_XY_W, MX_XY_H);
+        size(MX_XY_VIRT_W, MX_XY_VIRT_H);
     }
-    void setModeDiag() {
+
+    void setModeDiag()
+    {
         _diag_mode = true;
         size(MX_DIAG_W, MX_DIAG_H);
     }
 
-   private:
+private:
     bool _diag_mode = false;
     uint16_t _buf16;
     uint32_t _buf32;
 };
 
+// TODO: remove all public variables
 extern BallMatrix matrix;

@@ -14,13 +14,13 @@ void runString(String str) {
     matrix.setModeDiag();
     run.setSpeed(10);
     run.setWindow(0, matrix.width(), 1);
-    run.setColor24(0x00ff00);
+    run.setColor24(0x003300);
     run.setFont(gfx_font_3x5);
     run.setText(str);
     run.start();
 
     while (run.tick() != RG_FINISH) {
-        delay(0);
+        delay(1);
         yield();
     }
 }
@@ -46,6 +46,7 @@ void setup() {
     WiFiConnector.onError([]() {
         String str("Error! AP: ");
         str += WiFi.softAPSSID();
+        str += ": " + WiFi.localIP().toString();
         Serial.println(str);
         runString(str);
     });

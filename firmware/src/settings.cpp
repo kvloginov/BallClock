@@ -3,7 +3,7 @@
 #include <GyverNTP.h>
 #include <LittleFS.h>
 #include <Looper.h>
-#include <SettingsESP.h>
+#include <SettingsGyver.h>
 #include <WiFiConnector.h>
 
 #include "config.h"
@@ -13,7 +13,7 @@
 AutoOTA ota(PROJECT_VER, PROJECT_URL);
 
 GyverDBFile db(&LittleFS, "/data.db");
-static SettingsESP sett(PROJECT_NAME " v" PROJECT_VER, &db);
+static SettingsGyver sett(PROJECT_NAME " v" PROJECT_VER, &db);
 
 static void update(sets::Updater& u) {
     String s;
@@ -125,7 +125,12 @@ LP_LISTENER_("wifi_connect", []() {
 
 LP_TICKER([]() {
     if (Looper.thisSetup()) {
-        LittleFS.begin();
+        if (!LittleFS.begin(true)) { // true указывает на необходимость форматирования при ошибке
+            Serial.println("meeow, can't mount littleFS, restarting...");
+            return;
+        }
+
+        // LittleFS.begin();
         db.begin();
 
         db.init(kk::wifi_ssid, "");
